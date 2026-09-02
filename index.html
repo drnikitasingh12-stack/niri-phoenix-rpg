@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171322">
+<link rel="manifest" href="manifest.json">
+<title>Niri • Phoenix Rebirth</title>
+<style>
+:root{--bg:#100d18;--panel:#191522;--card:#211c2d;--text:#f7f2ff;--muted:#b9afc9;--accent:#e7a6ff;--accent2:#ffca8a;--good:#9ee6bd;--border:#393148}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#100d18,#151020 55%,#0f0c16);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:auto;padding:18px 14px 40px}.hero{padding:18px 4px 12px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.title{font-size:32px;font-weight:900;margin:5px 0}.sub{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat,.panel,.quest{background:var(--panel);border:1px solid var(--border);border-radius:18px}.stat{padding:13px}.stat b{display:block;font-size:21px}.stat span{font-size:12px;color:var(--muted)}
+.progress{height:10px;background:#2a2436;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
+.tabs{display:flex;gap:8px;overflow:auto;margin:16px 0}.tabs button{border:1px solid var(--border);background:var(--panel);color:var(--muted);padding:10px 14px;border-radius:999px;white-space:nowrap;font-weight:700}.tabs button.active{background:#30263b;color:var(--text);border-color:#604d70}
+.section{display:none}.section.active{display:block}.section h2{font-size:19px;margin:16px 2px 10px}
+.quest{display:flex;align-items:center;gap:12px;padding:13px;margin:9px 0}.quest.done{opacity:.55}.quest input{width:22px;height:22px;accent-color:#c88bea;flex:none}.qtext{flex:1;min-width:0}.qtext strong{display:block}.qtext small{color:var(--muted)}.xp{color:var(--accent2);font-weight:900;white-space:nowrap}
+.panel{padding:15px;margin:10px 0}.panel h3{margin:0 0 8px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:9px 0;color:var(--muted)}.row b{color:var(--text)}
+button.primary{width:100%;border:0;border-radius:14px;padding:13px;background:var(--accent);color:#1a1220;font-weight:900;font-size:15px}
+.reward{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.reward:last-child{border:0}.reward button{border:1px solid var(--border);background:#292237;color:var(--text);padding:9px 11px;border-radius:10px}.reward button:disabled{opacity:.4}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.badge{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px}.badge.locked{opacity:.42}.badge .emoji{font-size:27px}.badge strong{display:block;margin-top:4px}.badge small{color:var(--muted)}
+.log{color:var(--muted);font-size:13px;line-height:1.5}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#292238;border:1px solid #5b4a69;padding:11px 15px;border-radius:13px;display:none;z-index:5}
+@media(max-width:430px){.grid{grid-template-columns:repeat(3,1fr)}.stat b{font-size:18px}.title{font-size:28px}}
+</style>
+</head>
+<body>
+<main id="app">
+<section class="hero">
+<div class="eyebrow">Project BULTAOREUNE</div>
+<div class="title">🔥 Niri: The Phoenix Rebirth</div>
+<p class="sub">Build the life. Earn the XP. No negative XP. Comebacks count.</p>
+</section>
+
+<div class="grid">
+<div class="stat"><span>Level</span><b id="level">1</b></div>
+<div class="stat"><span>XP</span><b id="xp">0</b></div>
+<div class="stat"><span>Gold</span><b id="gold">0</b></div>
+</div>
+<div class="progress"><i id="bar"></i></div>
+<p class="sub" style="font-size:12px;margin:6px 2px" id="next"></p>
+
+<nav class="tabs" aria-label="Sections">
+<button class="active" data-tab="today">Today</button><button data-tab="skills">Skill Trees</button><button data-tab="rewards">Shop</button><button data-tab="achievements">Achievements</button>
+</nav>
+
+<section class="section active" id="today">
+<h2>🌅 Daily Quest Board</h2>
+<div id="daily"></div>
+<h2>⚔️ Bonus Quests</h2>
+<div id="bonus"></div>
+<div class="panel"><h3>🐉 Weekly Boss: Backlog Dragon</h3><p class="sub">Attack it for 90 minutes. One meaningful backlog task is enough.</p><div class="quest" id="bossQuest"><input type="checkbox" id="boss"><div class="qtext"><strong>Attack the Backlog Dragon</strong><small>Lecture • DPP • revision • 100 questions • organization</small></div><div class="xp">+100 XP</div></div></div>
+</section>
+
+<section class="section" id="skills">
+<h2>🌳 Skill Trees</h2><div id="skillsList"></div>
+</section>
+
+<section class="section" id="rewards">
+<h2>💰 Niri's Reward Shop</h2>
+<div class="panel"><div class="row"><span>Gold available</span><b id="gold2">0 🪙</b></div></div>
+<div class="panel">
+<div class="reward"><span>☕ Favourite snack / coffee<br><small>20 Gold</small></span><button data-cost="20">Buy</button></div>
+<div class="reward"><span>🎬 Guilt-free movie / episode<br><small>40 Gold</small></span><button data-cost="40">Buy</button></div>
+<div class="reward"><span>🛁 Everything shower + comfy reset<br><small>60 Gold</small></span><button data-cost="60">Buy</button></div>
+<div class="reward"><span>🛍️ Small thing you've wanted<br><small>100 Gold</small></span><button data-cost="100">Buy</button></div>
+<div class="reward"><span>🍜 Nice dinner / outing<br><small>200 Gold</small></span><button data-cost="200">Buy</button></div>
+<div class="reward"><span>✨ Bigger reward<br><small>500 Gold</small></span><button data-cost="500">Buy</button></div>
+</div>
+</section>
+
+<section class="section" id="achievements">
+<h2>🏆 Achievements</h2><div class="badges" id="badges"></div>
+</section>
+
+<div class="panel" style="margin-top:18px">
+<h3>🌸 The Rule</h3>
+<p class="sub">You never lose XP for a bad day. If you return after missing a day, claim the <b style="color:var(--accent)">+30 XP Comeback Bonus</b>.</p>
+<button class="primary" id="comeback" style="margin-top:10px">🔥 Claim Comeback Bonus</button>
+</div>
+<div class="panel"><h3>📜 Recent Log</h3><div class="log" id="log"></div></div>
+<div class="panel"><button class="primary" id="reset" style="background:#342a3e;color:var(--text)">Reset progress</button></div>
+</main>
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+(() => {
+const KEY='niriPhoenixRPG_v1';
+const daily=[
+['water','💧 Drink enough water',20,'Self-care'],['bed','🛏️ Make bed',5,'Life Management'],
+['study','📚 Complete one focused NEET session',40,'Scholar'],['work','🏥 Complete work responsibilities',30,'Warrior'],
+['reset','🌙 10-minute night reset + prep tomorrow',15,'Life Management']
+];
+const bonus=[
+['ncert','📖 NCERT reading session',25,'Scholar'],['mcq','🧬 50 MCQs',30,'Scholar'],['lecture','🎓 Complete a lecture',40,'Scholar'],
+['dpp','📝 Complete a DPP',30,'Scholar'],['revision','🔁 Revise an old topic',25,'Scholar'],
+['movement','🏃 10 min movement',15,'Self-care'],['coding','💻 20 min coding',20,'Niri'],['formulyt','📊 Work on FormulytAI',30,'Niri'],['ny','🌱 Work on Nutrifying You',20,'Niri'],
+['clean','🧹 Clean one small area',10,'Life Management'],['meal','🍲 Cook/prepare food',20,'Life Management'],['rest','🫶 Take intentional rest',20,'Self-care']
+];
+const skillXP={'Scholar':0,'Warrior':0,'Self-care':0,'Life Management':0,'Niri':0};
+const defaultState=()=>({xp:0,gold:0,done:{},boss:false,comeback:false,log:[],skill:{...skillXP}});
+let s=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||defaultState()}catch(e){return defaultState()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(s))}
+function dayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addXP(x,cat,label){s.xp+=x;s.gold+=Math.floor(x/10);if(cat)s.skill[cat]=(s.skill[cat]||0)+x;s.log.unshift(`${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} — ${label} +${x} XP`);s.log=s.log.slice(0,20);save();render();toast(`+${x} XP  •  +${Math.floor(x/10)} Gold`)}
+function renderQuest(item,type){
+const [id,label,xp,cat]=item, key=dayKey()+'_'+id, checked=!!s.done[key];
+return `<label class="quest ${checked?'done':''}"><input type="checkbox" data-id="${id}" data-xp="${xp}" data-cat="${cat}" data-label="${label}" ${checked?'checked':''}><div class="qtext"><strong>${label}</strong><small>${cat}</small></div><div class="xp">+${xp}</div></label>`
+}
+function render(){
+const level=Math.floor(s.xp/500)+1, into=s.xp%500;
+document.querySelector('#level').textContent=level;document.querySelector('#xp').textContent=s.xp;document.querySelector('#gold').textContent=s.gold;document.querySelector('#gold2').textContent=s.gold+' 🪙';
+document.querySelector('#bar').style.width=(into/500*100)+'%';document.querySelector('#next').textContent=`${500-into} XP to Level ${level+1}`;
+document.querySelector('#daily').innerHTML=daily.map(x=>renderQuest(x,'daily')).join('');
+document.querySelector('#bonus').innerHTML=bonus.map(x=>renderQuest(x,'bonus')).join('');
+document.querySelector('#boss').checked=!!s.boss;
+document.querySelector('#skillsList').innerHTML=Object.keys(s.skill).map(k=>`<div class="panel"><div class="row"><span>${k}</span><b>${s.skill[k]||0} XP</b></div><div class="progress"><i style="width:${Math.min(100,((s.skill[k]||0)%500)/5)}%"></i></div></div>`).join('');
+const ach=[
+['🔥','First Flame',s.xp>0,'Complete your first quest'],['📅','7-Day Survivor',false,'Keep showing up for 7 days'],['🔥','Comeback Queen',s.comeback,'Claim a comeback bonus'],
+['💯','The 100',false,'Complete 100 MCQs in one day'],['🐉','Backlog Slayer',s.boss,'Attack the backlog dragon'],
+['⚔️','Iron Will',false,'Study on a difficult day'],['🌙','Soft Life',false,'Take intentional rest'],['💻','Niri.exe',false,'Start your coding journey'],
+['🦅','Phoenix Rising',level>=50,'Reach Level 50'],['🌸','I Chose Myself',false,'Do something kind for yourself']
+];
+document.querySelector('#badges').innerHTML=ach.map(a=>`<div class="badge ${a[2]?'':'locked'}"><div class="emoji">${a[0]}</div><strong>${a[1]}</strong><small>${a[3]}</small></div>`).join('');
+document.querySelector('#log').innerHTML=s.log.length?s.log.map(x=>`<div>${x}</div>`).join(''):'No quests logged yet. Your first XP is waiting. 🔥';
+document.querySelectorAll('[data-cost]').forEach(b=>b.disabled=s.gold<Number(b.dataset.cost));
+}
+document.addEventListener('change',e=>{
+const el=e.target;if(el.matches('input[type=checkbox][data-id]')){
+const key=dayKey()+'_'+el.dataset.id;if(el.checked&&!s.done[key]){s.done[key]=true;addXP(Number(el.dataset.xp),el.dataset.cat,el.dataset.label)}else if(!el.checked){s.done[key]=false;save();render()}
+}
+if(el.id==='boss'&&el.checked&&!s.boss){s.boss=true;addXP(100,'Scholar','🐉 Backlog Dragon defeated')} else if(el.id==='boss'&&!el.checked){s.boss=false;save();render()}
+});
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelector('#'+b.dataset.tab).classList.add('active')}));
+document.addEventListener('click',e=>{
+if(e.target.matches('[data-cost]')){const c=Number(e.target.dataset.cost);if(s.gold>=c){s.gold-=c;s.log.unshift(`🎁 Reward redeemed for ${c} Gold`);save();render();toast('Reward unlocked. Enjoy it guilt-free. 💗')}}
+});
+document.querySelector('#comeback').addEventListener('click',()=>{if(!s.comeback){s.comeback=true;addXP(30,'Self-care','🔥 Comeback Bonus')}else toast('Comeback bonus already claimed in this run. 💗')});
+document.querySelector('#reset').addEventListener('click',()=>{if(confirm('Reset all Niri RPG progress?')){s=defaultState();save();render();toast('New campaign started. 🔥')}});
+function toast(t){const x=document.querySelector('#toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
+render();
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
